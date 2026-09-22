@@ -73,6 +73,11 @@ public class RewardedInterstitialExecutor {
                 if (callbackContext != null) {
                     callbackContext.success("Ad already loaded");
                 }
+
+                if (isAutoShow) {
+                    showRewardedInterstitial(null);
+                }
+
                 return;
             }
 
@@ -137,6 +142,16 @@ public class RewardedInterstitialExecutor {
             if (mRewardedInterstitialAd != null) {
 
                 isRewardEarned = false;
+
+                if (!AdMobNextGen.isAppInForeground) {
+                    try {
+                        JSONObject errData = new JSONObject();
+                        errData.put("code", "APP_IN_BACKGROUND");
+                        errData.put("message", "Ad presentation blocked: Application is currently in the background.");
+                        fireEvent("on.rewardedInter.failed.show", errData);
+                    } catch (JSONException e) {}
+                    return; 
+                }
 
                 mRewardedInterstitialAd.setAdEventCallback(new RewardedInterstitialAdEventCallback() {
 

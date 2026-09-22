@@ -52,6 +52,7 @@ public class AdMobNextGen extends CordovaPlugin {
 
     private boolean isNativeValidatorDisabled = true;
     public static boolean isInitialized = false;
+    public static boolean isAppInForeground = true;
 
     @Override
     public void pluginInitialize() {
@@ -300,6 +301,7 @@ public class AdMobNextGen extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
+        isAppInForeground = true;
         if (appOpenAdExecutor != null && appOpenAdExecutor.shouldAutoShow()) {
             appOpenAdExecutor.showAdIfAvailable(cordova.getActivity());
         }
@@ -308,6 +310,12 @@ public class AdMobNextGen extends CordovaPlugin {
                 appOpenAdPreloadExecutor.showPolledAd(null, null);
             }
         }
+    }
+
+    @Override
+    public void onPause(boolean multitasking) {
+        super.onPause(multitasking);
+        isAppInForeground = false;
     }
 
     private void initializeSDK(JSONArray args, CallbackContext callbackContext) {

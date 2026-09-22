@@ -84,6 +84,11 @@ public class RewardedExecutor {
         if (rewardedAd != null) {
 
             fireEvent("on.rewarded.loaded", null);
+
+            if (isAutoShow) {
+                showRewardedAd();
+            }
+
             return;
         }
 
@@ -154,6 +159,16 @@ public class RewardedExecutor {
         activity.runOnUiThread(() -> {
 
             isRewardEarned = false;
+
+            if (!AdMobNextGen.isAppInForeground) {
+                try {
+                    JSONObject errData = new JSONObject();
+                    errData.put("code", "APP_IN_BACKGROUND");
+                    errData.put("message", "Ad presentation blocked: Application is currently in the background.");
+                    fireEvent("on.rewarded.failed.show", errData);
+                } catch (JSONException e) {}
+                return; 
+            }
 
             rewardedAd.setAdEventCallback(new RewardedAdEventCallback() {
 

@@ -84,6 +84,11 @@ public class InterstitialExecutor {
                  requestCallback.success("Ad already loaded and ready"); 
             }
             fireEvent("on.interstitial.loaded", null);
+
+            if (isAutoShow) {
+                showInterstitialAd();
+            }
+
             return;
         }
 
@@ -115,6 +120,7 @@ public class InterstitialExecutor {
                             if (isAutoShow) {
                                 showInterstitialAd();
                             }
+
                         }
 
                         @Override
@@ -152,6 +158,17 @@ public class InterstitialExecutor {
         Activity activity = cordova.getActivity();
 
         activity.runOnUiThread(() -> {
+
+            if (!AdMobNextGen.isAppInForeground) {
+                try {
+                    JSONObject errData = new JSONObject();
+                    errData.put("code", "APP_IN_BACKGROUND");
+                    errData.put("message", "Ad presentation blocked: Application is currently in the background.");
+                    fireEvent("on.interstitial.failed.show", errData);
+                } catch (JSONException e) {}
+                return; 
+            }
+
             interstitialAd.setAdEventCallback(new InterstitialAdEventCallback() {
 
                 @Override

@@ -203,10 +203,23 @@ public class AppOpenAdExecutor {
             }
         });
 
-        isShowingAd = true;
         cordova.getActivity().runOnUiThread(() -> {
+
+            if (!AdMobNextGen.isAppInForeground) {
+                try {
+                    JSONObject errData = new JSONObject();
+                    errData.put("code", "APP_IN_BACKGROUND");
+                    errData.put("message", "Ad presentation blocked: Application is currently in the background.");
+                    fireEvent("on.appopen.failed.show", errData);
+                } catch (JSONException e) {}
+
+                return;
+            }
+
+            isShowingAd = true;
             appOpenAd.show(activity);
         });
+
     }
 
     public boolean shouldAutoShow() {
