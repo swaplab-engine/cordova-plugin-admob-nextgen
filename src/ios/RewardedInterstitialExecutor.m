@@ -72,6 +72,12 @@
                 CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Ad Loaded (Cached)"];
                 [self.plugin.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }
+
+            if (self.isAutoShow) {
+
+                [self showRewardedInterstitialAd:nil];
+            }
+
             return;
         }
 
@@ -143,6 +149,17 @@
 
 - (void)showRewardedInterstitialAd:(CDVInvokedUrlCommand *)command {
     if (self.rewardedInterstitialAd != nil) {
+
+        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+            NSString *jsonStr = @"{\"code\":\"APP_IN_BACKGROUND\", \"message\":\"Ad presentation blocked: Application is currently in the background or inactive.\"}";
+            [self.plugin fireEvent:@"document" event:@"on.rewardedInter.failed.show" withData:jsonStr];
+
+            if (command) {
+                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Ad presentation blocked: Application is in background."];
+                [self.plugin.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+            return;
+        }
 
         self.isRewardEarned = NO;
 

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugin-admob-nextgen" 
-        version="2.0.3-beta.1" 
+        version="2.0.3" 
         xmlns="http://apache.org/cordova/ns/plugins/1.0" 
         xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -139,7 +139,7 @@
             </config>
             <pods use-frameworks="true">
                 <pod name="GoogleUserMessagingPlatform" spec="~> 3.1.0" />
-                <pod name="Google-Mobile-Ads-SDK" spec="~> 13.1.0" />
+                <pod name="Google-Mobile-Ads-SDK" spec="~> 13.10.0" />
             </pods>
         </podspec>
 

@@ -64,6 +64,11 @@
         if (self.rewardedAd != nil) {
 
             [self.plugin fireEvent:@"document" event:@"on.rewarded.loaded" withData:nil];
+
+            if (self.isAutoShow) {
+                [self showRewardedAd];
+            }
+
             return;
         }
 
@@ -132,6 +137,12 @@
 
 - (void)showRewardedAd {
     if (self.rewardedAd == nil) return;
+
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        NSString *jsonStr = @"{\"code\":\"APP_IN_BACKGROUND\", \"message\":\"Ad presentation blocked: Application is currently in the background or inactive.\"}";
+        [self.plugin fireEvent:@"document" event:@"on.rewarded.failed.show" withData:jsonStr];
+        return;
+    }
 
     self.isRewardEarned = NO;
 

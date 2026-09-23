@@ -117,7 +117,7 @@ This plugin is regularly updated to support the latest standards.
 | :--- | :--- | :--- | :--- |
 | **GMA Next-Gen SDK** | Android | **1.4.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
 | **UMP SDK** | Android | **4.0.0** | [View Notes](https://developers.google.com/admob/android/privacy/release-notes) |
-| **Mobile Ads SDK** | iOS | **13.3.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
+| **Mobile Ads SDK** | iOS | **13.10.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
 | **UMP SDK** | iOS | **3.1.0** | [View Notes](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/privacy/download) |
 
 ### 🎉 View all plugin release notes

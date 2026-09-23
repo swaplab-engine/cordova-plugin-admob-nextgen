@@ -62,6 +62,11 @@
         if (self.interstitialAd != nil) {
 
             [self.plugin fireEvent:@"document" event:@"on.interstitial.loaded" withData:nil];
+
+            if (self.isAutoShow) {
+                [self showInterstitialAd];
+            }
+
             return;
         }
 
@@ -130,6 +135,12 @@
 
 - (void)showInterstitialAd {
     if (self.interstitialAd == nil) return;
+
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        NSString *jsonStr = @"{\"code\":\"APP_IN_BACKGROUND\", \"message\":\"Ad presentation blocked: Application is currently in the background.\"}";
+        [self.plugin fireEvent:@"document" event:@"on.interstitial.failed.show" withData:jsonStr];
+        return;
+    }
 
     [self.interstitialAd presentFromRootViewController:self.plugin.viewController];
 }

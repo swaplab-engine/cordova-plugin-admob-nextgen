@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-admob-nextgen",
-  "version": "2.0.3-beta.1",
+  "version": "2.0.3",
   "description": "Google Mobile Ads Next Gen SDK for Cordova. High performance and modular architecture. ",
   "cordova": {
     "id": "cordova-plugin-admob-nextgen",

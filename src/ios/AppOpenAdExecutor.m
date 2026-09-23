@@ -79,6 +79,11 @@
                     CDVPluginResult* res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Ad Ready"];
                     [self.plugin.commandDelegate sendPluginResult:res callbackId:command.callbackId];
                 }
+
+                if (self.isAutoShow) {
+                    [self showAdIfAvailable];
+                }
+
             }
             return;
         }
@@ -150,6 +155,12 @@
 
     if (![self isAdAvailable]) {
         NSString *jsonStr = @"{\"message\":\"Ad not ready or expired\"}";
+        [self.plugin fireEvent:@"document" event:@"on.appopen.failed.show" withData:jsonStr];
+        return;
+    }
+
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        NSString *jsonStr = @"{\"code\":\"APP_IN_BACKGROUND\", \"message\":\"Ad presentation blocked: Application is currently in the background or inactive.\"}";
         [self.plugin fireEvent:@"document" event:@"on.appopen.failed.show" withData:jsonStr];
         return;
     }
