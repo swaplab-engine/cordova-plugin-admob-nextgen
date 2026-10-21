@@ -66,14 +66,17 @@
     GADRequestConfiguration *requestConfiguration = GADMobileAds.sharedInstance.requestConfiguration;
 
     NSNumber *coppaTag = [self parseBooleanFromDict:config key:@"tagForChildDirectedTreatment"];
-    if (coppaTag != nil) {
-        requestConfiguration.tagForChildDirectedTreatment = coppaTag;
-
-    }
-
     NSNumber *tfuaTag = [self parseBooleanFromDict:config key:@"tagForUnderAgeOfConsent"];
-    if (tfuaTag != nil) {
-        requestConfiguration.tagForUnderAgeOfConsent = tfuaTag;
+
+    if (coppaTag != nil && [coppaTag boolValue]) {
+        requestConfiguration.ageRestrictedTreatment = GADAgeRestrictedTreatmentChild;
+
+    } else if (tfuaTag != nil && [tfuaTag boolValue]) {
+        requestConfiguration.ageRestrictedTreatment = GADAgeRestrictedTreatmentTeen;
+
+    } else if ((coppaTag != nil && ![coppaTag boolValue]) || 
+               (tfuaTag != nil && ![tfuaTag boolValue])) {
+        requestConfiguration.ageRestrictedTreatment = GADAgeRestrictedTreatmentUnspecified;
 
     }
 

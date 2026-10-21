@@ -21,7 +21,8 @@ It moves away from legacy implementations to modern `SurfaceControl`, optimized 
 > (NEW) ⚡️ Next-Gen special capacitor: [capacitor-admob-nextgen](https://github.com/swaplab-engine/capacitor-admob-nextgen)
 ---
 
-## 🚀 Why Next-Gen?
+<details>
+<summary>Click to view: 🚀 Why Next-Gen?</summary>
 
 Google has introduced a fundamental shift in how ads are rendered on Android. 
 
@@ -97,8 +98,9 @@ This plugin prioritizes the safety of your AdMob account and the stability of yo
 
 * **Background Thread Loading**: All ad requests are dispatched on background threads, ensuring your app's UI never freezes.
 
-
 ---
+
+</details>
 
 
 ## Cordova/Capacitor/Framework7 AdMob Next-Gen: 
@@ -115,9 +117,9 @@ This plugin is regularly updated to support the latest standards.
 
 | Component | Platform | Version | Release Notes |
 | :--- | :--- | :--- | :--- |
-| **GMA Next-Gen SDK** | Android | **1.4.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
+| **GMA Next-Gen SDK** | Android | **1.5.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
 | **UMP SDK** | Android | **4.0.0** | [View Notes](https://developers.google.com/admob/android/privacy/release-notes) |
-| **Mobile Ads SDK** | iOS | **13.10.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
+| **Mobile Ads SDK** | iOS | **13.11.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
 | **UMP SDK** | iOS | **3.1.0** | [View Notes](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/privacy/download) |
 
 ### 🎉 View all plugin release notes
@@ -142,6 +144,9 @@ Add this to your `config.xml` to restore the plugin automatically.
     </plugin>
 
 ---
+
+### 📱 iOS 27 & iPhone Duo Support 
+- 👉 [**Releases notes**](https://github.com/swaplab-engine/cordova-plugin-admob-nextgen/releases/tag/2.1.4-beta)
 
 ## (Optional)
 
@@ -638,30 +643,8 @@ document.addEventListener('on.rewarded.loaded', (e) => {
 
 ---
 
-
 ## ⚖️ Revenue Policy
 
-**No Ad-Sharing. No Hidden Fees.**
-
-Unlike many other free plugins, this project is clean:
 * **0% Revenue Share:** This plugin do not inject our own Ad Unit IDs into your traffic.
 * **100% Control:** Every impression and click goes directly to your AdMob account.
-* **Transparent Source:** The code is open source. You can verify that no third-party SDKs or hidden backdoors exist.
-
----
-
-## ❤️ Support the Project
-
-This plugin is developed and maintained in my free time. 
-If it saved you hours of work, consider supporting the development!
-
-<a href="https://www.buymeacoffee.com/emi.indo" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >
-</a>
-
-Your support helps me keep the dependencies updated and the cleaner script running smoothly.
-
-
-<p align="center">
-  Built with ❤️ by <b>Swaplab Engine</b> (formerly EMI-INDO).
-</p>
+* **Transparent Source:** The code is open source.

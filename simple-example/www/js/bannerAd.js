@@ -65,6 +65,53 @@ document.addEventListener('on.banner.load', (e) => {
     }
 });
 
+// ==========================================
+// NEW: ORIENTATION / FOLD DETECTOR
+// ==========================================
+var resizeTimeout; // Variable to hold the loop
+
+document.addEventListener('on.banner.orientation.changed', (e) => {
+    var data = e.data || e;
+    console.log("Banner Orientation/Size Changed", data);
+    
+    if (window.logToScreen) {
+        window.logToScreen("🔄 LAYOUT CHANGED: " + JSON.stringify(data), "event");
+    }
+
+    // 1. Clear the timeout to prevent multiple invocations if the user folds/unfolds the screen rapidly.
+    clearTimeout(resizeTimeout);
+
+    // 2. Allow a 300ms delay so that the OS transition animations (Notch/Safe Area/Foldable Screen) can complete fully.
+    resizeTimeout = setTimeout(() => {
+        try {
+            // Remove the old banner from the screen
+            admobNextGen.removeBanner();
+
+            // Retrieve the state from the currently active UI (so that the position remains the same as it was before collapsing)
+            var selectedPosition = document.getElementById('banner-preload-pos').value || 'bottom';
+            var isOverlappingSelected = document.getElementById('banner-preload-overlap').checked || false;
+            var isCollapsibleSelected = document.getElementById('banner-preload-collapse').checked || false;
+
+            // Re-render the banner with the new screen size limits
+            admobNextGen.createBanner({
+                adUnitId: Banner_ID,
+                position: selectedPosition,
+                size: 'ADAPTIVE',
+                isOverlapping: isOverlappingSelected,
+                collapsible: isCollapsibleSelected,
+                isAutoShow: true,
+                retryInterval: 1000  // <--- KEY POINT: 5-second anti-spam bypass specifically for rotation/resizing
+            });
+
+            if (window.logToScreen) {
+                window.logToScreen("✅ Banner reloaded perfectly for new bounds", "event");
+            }
+        } catch (error) {
+            console.error("Failed to reload banner on orientation change:", error);
+        }
+    }, 300);
+});
+
 document.addEventListener('on.banner.failed', (e) => {
     var err = e.data || e;
     console.error(err);

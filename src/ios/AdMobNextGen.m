@@ -54,14 +54,16 @@
             }
         }
 
-        if (options[@"tagForChildDirectedTreatment"]) {
-            BOOL isChildDirected = [options[@"tagForChildDirectedTreatment"] boolValue];
-            requestConfig.tagForChildDirectedTreatment = @(isChildDirected);
-        }
+        NSNumber *childDirected = options[@"tagForChildDirectedTreatment"];
+        NSNumber *underAge = options[@"tagForUnderAgeOfConsent"];
 
-        if (options[@"tagForUnderAgeOfConsent"]) {
-            BOOL isUnderAge = [options[@"tagForUnderAgeOfConsent"] boolValue];
-            requestConfig.tagForUnderAgeOfConsent = @(isUnderAge);
+        if (childDirected != nil && [childDirected boolValue]) {
+            requestConfig.ageRestrictedTreatment = GADAgeRestrictedTreatmentChild;
+        } else if (underAge != nil && [underAge boolValue]) {
+            requestConfig.ageRestrictedTreatment = GADAgeRestrictedTreatmentTeen;
+        } else if ((childDirected != nil && ![childDirected boolValue]) || 
+                   (underAge != nil && ![underAge boolValue])) {
+            requestConfig.ageRestrictedTreatment = GADAgeRestrictedTreatmentUnspecified;
         }
     }
 

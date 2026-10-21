@@ -113,7 +113,9 @@
             NSString *purposeLegitimateInterests = [prefs stringForKey:@"IABTCF_PurposeLegitimateInterests"] ?: @""; 
             NSString *vendorConsents = [prefs stringForKey:@"IABTCF_VendorConsents"] ?: @"";
             NSString *additionalConsent = [prefs stringForKey:@"IABTCF_AddtlConsent"] ?: @"";
-            NSInteger gdprApplies = [prefs integerForKey:@"IABTCF_gdprApplies"];
+
+            id gdprAppliesObj = [prefs objectForKey:@"IABTCF_gdprApplies"];
+            NSInteger gdprApplies = gdprAppliesObj ? [gdprAppliesObj integerValue] : -1;
 
             tcData[@"purposeConsents"] = purposeConsents;
             tcData[@"purposeLegitimateInterests"] = purposeLegitimateInterests; 
@@ -128,7 +130,15 @@
             BOOL isAdMobNonPersonalizedAdsAllowed = NO;
             NSString *adMobConsentStatus = @"Unknown";
 
-            if (gdprApplies == 0) {
+            if (gdprAppliesObj == nil) {
+
+                statusMessage = @"TCF data missing. Consent not yet gathered.";
+                adMobConsentStatus = @"UNKNOWN";
+
+                isPersonalizedAllowed = NO;
+                isAdMobPersonalizedAdsAllowed = NO;
+                isAdMobNonPersonalizedAdsAllowed = NO;
+            } else if (gdprApplies == 0) {
                 isPersonalizedAllowed = YES;
                 statusMessage = @"Not GDPR region. Personalized Ads allowed by default.";
 

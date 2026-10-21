@@ -54,7 +54,7 @@
         
     </platform>
 
-    <preference name="NEXT_GEN_SDK_VERSION" default="1.4.0" />
+    <preference name="NEXT_GEN_SDK_VERSION" default="1.5.0" />
     <preference name="UMP_VERSION" default="4.0.0" />
     <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
     <preference name="APP_ID_ANDROID" default="ca-app-pub-3940256099942544~3347511713" />
@@ -139,7 +139,7 @@
             </config>
             <pods use-frameworks="true">
                 <pod name="GoogleUserMessagingPlatform" spec="~> 3.1.0" />
-                <pod name="Google-Mobile-Ads-SDK" spec="~> 13.10.0" />
+                <pod name="Google-Mobile-Ads-SDK" spec="~> 13.11.0" />
             </pods>
         </podspec>
 

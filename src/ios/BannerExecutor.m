@@ -1,11 +1,27 @@
 #import "BannerExecutor.h"
 #import "AdMobNextGen.h"
 
+@interface BoundsObserverView : UIView
+@property (nonatomic, copy) void (^onBoundsChanged)(CGRect bounds);
+@end
+
+@implementation BoundsObserverView
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (self.onBoundsChanged) {
+        self.onBoundsChanged(self.bounds);
+    }
+}
+@end
+
 @interface BannerExecutor ()
 
 @property(nonatomic, weak) AdMobNextGen *plugin;
 @property(nonatomic, strong) GADBannerView *bannerView;
 @property(nonatomic, strong) GADBannerView *pendingBannerView;
+
+@property(nonatomic, strong) BoundsObserverView *boundsObserverView;
+@property(nonatomic, assign) CGFloat lastObservedWidth;
 
 @property(nonatomic, strong) NSString *lastAdUnitId;
 @property(nonatomic, strong) NSString *lastSizeStr;
@@ -48,17 +64,15 @@
         self.lastLoadTime = 0;
         self.minLoadInterval = 5.0;
 
-        [[NSNotificationCenter defaultCenter]
-            addObserver:self
-               selector:@selector(layoutViews)
-                   name:UIDeviceOrientationDidChangeNotification
-                 object:nil];
     }
     return self;
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+            [self.boundsObserverView removeFromSuperview];
+            self.boundsObserverView = nil;
+        });
 }
 
 #pragma mark - Smart Window Helper
@@ -88,6 +102,49 @@
 #pragma clang diagnostic pop
     }
     return window;
+}
+
+- (void)startObservingBounds {
+    if (self.boundsObserverView != nil) return;
+
+    UIViewController *rootVC = self.plugin.viewController;
+    if (!rootVC) return;
+
+    self.lastObservedWidth = rootVC.view.bounds.size.width;
+
+    BoundsObserverView *observerView = [[BoundsObserverView alloc] init];
+    observerView.userInteractionEnabled = NO;
+    observerView.backgroundColor = [UIColor clearColor];
+    observerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [rootVC.view addSubview:observerView];
+    [rootVC.view sendSubviewToBack:observerView];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [observerView.leadingAnchor constraintEqualToAnchor:rootVC.view.leadingAnchor],
+        [observerView.trailingAnchor constraintEqualToAnchor:rootVC.view.trailingAnchor],
+        [observerView.topAnchor constraintEqualToAnchor:rootVC.view.topAnchor],
+        [observerView.bottomAnchor constraintEqualToAnchor:rootVC.view.bottomAnchor]
+    ]];
+
+    __weak typeof(self) weakSelf = self;
+    observerView.onBoundsChanged = ^(CGRect bounds) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf layoutViews];
+
+            CGFloat currentWidth = bounds.size.width;
+            if (fabs(weakSelf.lastObservedWidth - currentWidth) > 1.0) {
+                weakSelf.lastObservedWidth = currentWidth;
+
+                if (weakSelf.lastAdUnitId.length > 0) {
+                    NSString *jsonStr = @"{\"orientation\":\"RESIZE\"}";
+                    [weakSelf.plugin fireEvent:@"document" event:@"on.banner.orientation.changed" withData:jsonStr];
+                }
+            }
+        });
+    };
+
+    self.boundsObserverView = observerView;
 }
 
 #pragma mark - Main Methods
@@ -120,6 +177,9 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
+
+      [self startObservingBounds];
+
       NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
 
       if (self.isLoading) {
@@ -247,79 +307,85 @@
     if ([sizeStr isEqualToString:@"LEADERBOARD"])
         return GADAdSizeLeaderboard;
 
-    UIViewController *rootViewController = self.plugin.viewController;
-    CGRect frame = rootViewController.view.frame;
-    if (@available(iOS 11.0, *)) {
-        frame = UIEdgeInsetsInsetRect(rootViewController.view.frame,
-                                      rootViewController.view.safeAreaInsets);
-    }
-    return GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(
-        frame.size.width);
+        UIWindow *window = [self getKeyWindow];
+        CGFloat screenW = window ? window.bounds.size.width : UIScreen.mainScreen.bounds.size.width;
+
+        if (window) {
+            screenW -= (window.safeAreaInsets.left + window.safeAreaInsets.right);
+        }
+
+        if ([sizeStr isEqualToString:@"LARGE_ANCHORED_ADAPTIVE"]) {
+            return GADLargeAnchoredAdaptiveBannerAdSizeWithWidth(screenW);
+        }
+
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        return GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(screenW);
+    #pragma clang diagnostic pop
 }
 
 - (void)layoutViews {
     dispatch_async(dispatch_get_main_queue(), ^{
-      UIViewController *rootVC = self.plugin.viewController;
-      UIView *webView = self.plugin.webView;
-      if (!rootVC || !webView)
-          return;
+        UIViewController *rootVC = self.plugin.viewController;
+        UIView *webView = self.plugin.webView;
+        if (!rootVC || !webView) return;
 
-      UIWindow *window = [self getKeyWindow];
-      UIEdgeInsets safeArea =
-          (window) ? window.safeAreaInsets : UIEdgeInsetsZero;
+        UIWindow *window = [self getKeyWindow];
+        if (!window) return;
 
-      CGFloat screenH = UIScreen.mainScreen.bounds.size.height;
-      CGFloat screenW = UIScreen.mainScreen.bounds.size.width;
+        UIEdgeInsets safeArea = window.safeAreaInsets;
 
-      if (safeArea.bottom == 0 && screenH >= 812.0)
-          safeArea.bottom = 34.0;
-      if (safeArea.top == 0 && screenH >= 812.0)
-          safeArea.top = 44.0;
+        CGFloat screenH = window.bounds.size.height;
+        CGFloat screenW = window.bounds.size.width;
 
-      CGRect fullScreenRect = CGRectMake(0, 0, screenW, screenH);
+        if (safeArea.bottom == 0 && screenH >= 812.0) safeArea.bottom = 34.0;
+        if (safeArea.top == 0 && screenH >= 812.0) safeArea.top = 44.0;
 
-      if (self.isBannerVisible && self.bannerView &&
-          self.activeBannerHeight > 0) {
+        CGRect fullScreenRect = CGRectMake(0, 0, screenW, screenH);
 
-          CGSize adSize = self.bannerView.intrinsicContentSize;
-          CGFloat bH =
-              adSize.height > 0 ? adSize.height : self.activeBannerHeight;
-          CGFloat bW = adSize.width > 0 ? adSize.width
-                                        : self.bannerView.bounds.size.width;
-          CGFloat bX = (screenW - bW) / 2.0;
-          CGFloat bY = 0;
+        if (self.isBannerVisible && self.bannerView && self.activeBannerHeight > 0) {
+            CGSize adSize = self.bannerView.intrinsicContentSize;
+            CGFloat bH = adSize.height > 0 ? adSize.height : self.activeBannerHeight;
+            CGFloat bW = adSize.width > 0 ? adSize.width : self.bannerView.bounds.size.width;
+            CGFloat bX = (screenW - bW) / 2.0;
+            CGFloat bY = 0;
 
-          if ([self.currentPosition isEqualToString:@"top"]) {
-              bY = safeArea.top;
-          } else {
-              bY = screenH - safeArea.bottom - bH;
-          }
+            if ([self.currentPosition isEqualToString:@"top"]) {
+                bY = safeArea.top;
+                self.bannerView.frame = CGRectMake(bX, bY, bW, bH);
+                self.bannerView.hidden = NO;
 
-          self.bannerView.frame = CGRectMake(bX, bY, bW, bH);
-          self.bannerView.hidden = NO;
+                if (!self.isOverlapping) {
+                    CGRect newWebFrame = fullScreenRect;
 
-          if (!self.isOverlapping) {
-              CGRect newWebFrame = fullScreenRect;
-              if ([self.currentPosition isEqualToString:@"top"]) {
-                  newWebFrame.origin.y = bY + bH;
-                  newWebFrame.size.height = screenH - newWebFrame.origin.y;
-              } else {
-                  newWebFrame.origin.y = 0;
-                  newWebFrame.size.height = bY;
-              }
-              webView.frame = newWebFrame;
-          } else {
-              webView.frame = fullScreenRect;
-          }
-      } else {
-          if (self.bannerView)
-              self.bannerView.hidden = YES;
-          webView.frame = fullScreenRect;
-      }
+                    newWebFrame.origin.y = bY + bH;
+                    newWebFrame.size.height = screenH - (bY + bH);
+                    webView.frame = newWebFrame;
+                } else {
+                    webView.frame = fullScreenRect;
+                }
+            } else {
+                bY = screenH - safeArea.bottom - bH;
+                self.bannerView.frame = CGRectMake(bX, bY, bW, bH);
+                self.bannerView.hidden = NO;
 
-      if (self.bannerView && self.isBannerVisible) {
-          [webView.superview bringSubviewToFront:self.bannerView];
-      }
+                if (!self.isOverlapping) {
+                    CGRect newWebFrame = fullScreenRect;
+                    newWebFrame.origin.y = 0;
+                    newWebFrame.size.height = bY;
+                    webView.frame = newWebFrame;
+                } else {
+                    webView.frame = fullScreenRect;
+                }
+            }
+        } else {
+            if (self.bannerView) self.bannerView.hidden = YES;
+            webView.frame = fullScreenRect;
+        }
+
+        if (self.bannerView && self.isBannerVisible) {
+            [webView.superview bringSubviewToFront:self.bannerView];
+        }
     });
 }
 
