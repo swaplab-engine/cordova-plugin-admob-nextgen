@@ -207,7 +207,8 @@ public class RewardedPreloadExecutor {
         cordova.getActivity().runOnUiThread(() -> {
             isPreloaderActive = false;
             if (currentAdUnitId != null) {
-                RewardedAdPreloader.destroyAll();
+                RewardedAdPreloader.destroy(currentAdUnitId);
+
                 currentAdUnitId = null;
             }
             if (callbackContext != null) {

@@ -136,10 +136,6 @@
             if (fabs(weakSelf.lastObservedWidth - currentWidth) > 1.0) {
                 weakSelf.lastObservedWidth = currentWidth;
 
-                if (weakSelf.lastAdUnitId.length > 0) {
-                    NSString *jsonStr = @"{\"orientation\":\"RESIZE\"}";
-                    [weakSelf.plugin fireEvent:@"document" event:@"on.banner.orientation.changed" withData:jsonStr];
-                }
             }
         });
     };

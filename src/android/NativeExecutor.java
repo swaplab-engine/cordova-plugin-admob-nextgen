@@ -62,6 +62,7 @@ public class NativeExecutor {
     private long lastLoadTime = 0;     
     private long minLoadInterval = 5000; 
     private boolean isNativeVisible = false;
+    private int requestGeneration = 0;
 
     private int systemSafeTop = 0;
     private int systemSafeBottom = 0;
@@ -148,8 +149,12 @@ public class NativeExecutor {
             isLoading = true;
             lastLoadTime = currentTime;
 
+            requestGeneration++;
+            final int currentGen = requestGeneration;
+
             cordova.getThreadPool().execute(() -> {
-                loadNativeAd(adUnitId, finalX, finalY, finalW, finalH, callbackContext);
+
+                loadNativeAd(adUnitId, finalX, finalY, finalW, finalH, currentGen, callbackContext);
             });
 
         } catch (JSONException e) {
@@ -157,7 +162,7 @@ public class NativeExecutor {
         }
     }
 
-    private void loadNativeAd(String adUnitId, int x, int y, int w, int h, CallbackContext callbackContext) {
+    private void loadNativeAd(String adUnitId, int x, int y, int w, int h, int currentGen, CallbackContext callbackContext) {
 
         VideoOptions videoOptions = new VideoOptions.Builder()
                 .setStartMuted(true)
@@ -175,6 +180,13 @@ public class NativeExecutor {
             public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
 
                 cordova.getActivity().runOnUiThread(() -> {
+
+                    if (currentGen != requestGeneration) {
+
+                        nativeAd.destroy();
+                        return;
+                    }
+
                     isLoading = false;
 
                     NativeAdView pendingView = buildNativeAdView(nativeAd, x, y, w, h);
@@ -256,6 +268,10 @@ public class NativeExecutor {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 cordova.getActivity().runOnUiThread(() -> {
+
+                    if (currentGen != requestGeneration) {
+                        return;
+                    }
 
                     isLoading = false;
 
@@ -449,6 +465,9 @@ public class NativeExecutor {
 
     public void removeNativeAd() {
         cordova.getActivity().runOnUiThread(() -> {
+
+            requestGeneration++;
+            isLoading = false;
 
             isNativeVisible = false;
 

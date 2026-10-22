@@ -294,6 +294,19 @@ public class AppOpenAdPreloadExecutor {
         return AppOpenAdPreloader.isAdAvailable(this.currentAdUnitId);
     }
 
+    public void stopPreloadAndClear(CallbackContext callbackContext) {
+        cordova.getActivity().runOnUiThread(() -> {
+            isShowingAd = false; 
+            if (currentAdUnitId != null) {
+                AppOpenAdPreloader.destroy(currentAdUnitId);
+                currentAdUnitId = null;
+            }
+            if (callbackContext != null) {
+                callbackContext.success("App Open Preloader stopped and cleared");
+            }
+        });
+    }
+
     private void fireEvent(String eventName, JSONObject data) {
         if (cordova == null) return;
         cordova.getActivity().runOnUiThread(() -> {

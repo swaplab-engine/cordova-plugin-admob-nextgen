@@ -388,6 +388,47 @@ Supports **Adaptive**, **Standard**, and **Collapsible** banners.
     on.banner.refreshed
     on.banner.refresh.failed
 
+
+### Handling Screen Rotation & Foldable Devices (Adaptive Banners)
+When the device orientation changes (Portrait <-> Landscape) or a foldable device (like Galaxy Z Fold / iPhone Duo) is opened/closed, the screen width changes. To ensure the Adaptive Banner resizes perfectly to the new screen bounds, you must listen to the global `on.screen.orientation.changed` event, remove the old banner, and request a new one.
+
+**Important:** Always use a `300ms` timeout to allow the OS to finish its UI transition (Safe Area calculation) before requesting the new banner. Set `retryInterval: 0` to bypass the anti-spam protection specifically for this rotation event.
+
+```javascript
+// Variable to hold the debounce timeout
+let resizeTimeout;
+
+document.addEventListener('on.screen.orientation.changed', (e) => {
+    let data = e.data || e;
+    console.log("Screen orientation/size changed to: " + data.orientation);
+
+    // 1. Clear timeout to prevent double requests if the user rotates the screen wildly
+    clearTimeout(resizeTimeout);
+
+    // 2. Allow 300ms for the OS UI (Notch/Safe Area) to finish transitioning
+    resizeTimeout = setTimeout(() => {
+        try {
+            // Destroy the old banner that doesn't fit the new screen width
+            admobNextGen.removeBanner();
+
+            // Recreate the banner (It will automatically read the new screen bounds)
+            admobNextGen.createBanner({
+                adUnitId: 'ca-app-pub-xxx/xxx', // Use your active Banner ID
+                position: 'bottom',             // Or 'top'
+                size: 'ADAPTIVE',               // Adaptive will recalculate width
+                isOverlapping: false,
+                isAutoShow: true,
+                retryInterval: 0                // <--- CRITICAL: Bypass anti-spam for rotation
+            });
+            
+            console.log("Banner reloaded perfectly for new bounds.");
+        } catch (error) {
+            console.error("Failed to reload banner on orientation change:", error);
+        }
+    }, 300);
+});
+```
+
 ---
 
 ## 4. Native Ads (Advanced Overlay) - Android Only
@@ -584,7 +625,7 @@ The AdMob Next-Gen SDK introduces a powerful background Preloader Engine that ca
 | Ad Format | Start Preload | Show Polled Ad | Other Preload Methods |
 | :--- | :--- | :--- | :--- |
 | **Banner** | `startBannerPreload(obj)` | `showPreloadedBanner()` | `stopBannerPreload()`, `hideBannerPreload()` |
-| **App Open** | `startAppOpenPreload(obj)` | `showPreloadedAppOpenAd()` | `isAppOpenAdAvailable()` |
+| **App Open** | `startAppOpenPreload(obj)` | `showPreloadedAppOpenAd()` | `isAppOpenAdAvailable()` | `stopAppOpenPreload()` |
 | **Interstitial** | `startInterstitialPreload(obj)` | `showPreloadedInterstitial()` | `stopInterstitialPreload()`, `isInterstitialAdAvailable()` |
 | **Rewarded** | `startRewardedPreload(obj)` | `showPreloadedRewarded()` | `stopRewardedPreload()`, `isRewardedAdAvailable()` |
 | **Rewarded Interstitial** | `startRewardedInterstitialPreload(obj)` | `showPreloadedRewardedInterstitial()` | `stopRewardedInterstitialPreload()`, `isRewardedInterstitialAdAvailable()` |

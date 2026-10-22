@@ -219,6 +219,11 @@ public class AdMobNextGen extends CordovaPlugin {
             return true;
         }
 
+        if ("stopAppOpenPreload".equals(action)) {
+            appOpenAdPreloadExecutor.stopPreloadAndClear(callbackContext);
+            return true;
+        }
+
         if ("startBannerPreload".equals(action)) {
             bannerPreloadExecutor.startPreload(args, callbackContext);
             return true;
@@ -429,4 +434,38 @@ public class AdMobNextGen extends CordovaPlugin {
             }
         }
     }
+
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        cordova.getActivity().runOnUiThread(() -> {
+            try {
+                JSONObject data = new JSONObject();
+
+                if (newConfig.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+                    data.put("orientation", "LANDSCAPE");
+                } else if (newConfig.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+                    data.put("orientation", "PORTRAIT");
+                } else {
+                    data.put("orientation", "RESIZE"); 
+                }
+
+                StringBuilder js = new StringBuilder();
+                js.append("javascript:cordova.fireDocumentEvent('");
+                js.append("on.screen.orientation.changed");
+                js.append("', ");
+                js.append(data.toString());
+                js.append(");");
+
+                if (webView != null) {
+                    webView.loadUrl(js.toString());
+                }
+
+            } catch (JSONException e) {
+
+            }
+        });
+    }
+
 }

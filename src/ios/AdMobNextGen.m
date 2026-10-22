@@ -7,6 +7,19 @@
 #import "AppOpenAdExecutor.h"
 #import "RewardedInterstitialExecutor.h"
 
+@interface GlobalBoundsObserverView : UIView
+@property (nonatomic, copy) void (^onBoundsChanged)(CGRect bounds);
+@end
+
+@implementation GlobalBoundsObserverView
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (self.onBoundsChanged) {
+        self.onBoundsChanged(self.bounds);
+    }
+}
+@end
+
 @interface AdMobNextGen()
 @property (nonatomic, assign) BOOL isInitialized;
 @property (nonatomic, strong) ConsentExecutor *consentExecutor;
@@ -15,6 +28,9 @@
 @property (nonatomic, strong) InterstitialExecutor *interstitialExecutor;
 @property (nonatomic, strong) RewardedExecutor *rewardedExecutor;
 @property (nonatomic, strong) RewardedInterstitialExecutor *rewardedInterstitialExecutor;
+
+@property (nonatomic, strong) GlobalBoundsObserverView *globalBoundsObserver;
+@property (nonatomic, assign) CGFloat lastObservedWidth;
 @end
 
 @implementation AdMobNextGen
@@ -28,6 +44,49 @@
     self.rewardedExecutor = [[RewardedExecutor alloc] initWithPlugin:self];
     [[AppOpenAdExecutor sharedInstance] initializeWithPlugin:self];
     self.rewardedInterstitialExecutor = [[RewardedInterstitialExecutor alloc] initWithPlugin:self];
+
+    [self setupGlobalBoundsObserver];
+}
+
+- (void)setupGlobalBoundsObserver {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *rootVC = self.viewController;
+        if (!rootVC) return;
+
+        self.lastObservedWidth = rootVC.view.bounds.size.width;
+
+        GlobalBoundsObserverView *observerView = [[GlobalBoundsObserverView alloc] init];
+        observerView.userInteractionEnabled = NO;
+        observerView.backgroundColor = [UIColor clearColor];
+        observerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+        [rootVC.view addSubview:observerView];
+        [rootVC.view sendSubviewToBack:observerView];
+
+        [NSLayoutConstraint activateConstraints:@[
+            [observerView.leadingAnchor constraintEqualToAnchor:rootVC.view.leadingAnchor],
+            [observerView.trailingAnchor constraintEqualToAnchor:rootVC.view.trailingAnchor],
+            [observerView.topAnchor constraintEqualToAnchor:rootVC.view.topAnchor],
+            [observerView.bottomAnchor constraintEqualToAnchor:rootVC.view.bottomAnchor]
+        ]];
+
+        __weak typeof(self) weakSelf = self;
+        observerView.onBoundsChanged = ^(CGRect bounds) {
+            CGFloat currentWidth = bounds.size.width;
+
+            if (fabs(weakSelf.lastObservedWidth - currentWidth) > 1.0) {
+                weakSelf.lastObservedWidth = currentWidth;
+
+                BOOL isLandscape = bounds.size.width > bounds.size.height;
+                NSString *orientationStr = isLandscape ? @"LANDSCAPE" : @"PORTRAIT";
+
+                NSString *jsonStr = [NSString stringWithFormat:@"{\"orientation\":\"%@\"}", orientationStr];
+                [weakSelf fireEvent:@"document" event:@"on.screen.orientation.changed" withData:jsonStr];
+            }
+        };
+
+        self.globalBoundsObserver = observerView;
+    });
 }
 
 - (void)initialize:(CDVInvokedUrlCommand*)command {
@@ -61,7 +120,7 @@
             requestConfig.ageRestrictedTreatment = GADAgeRestrictedTreatmentChild;
         } else if (underAge != nil && [underAge boolValue]) {
             requestConfig.ageRestrictedTreatment = GADAgeRestrictedTreatmentTeen;
-        } else if ((childDirected != nil && ![childDirected boolValue]) || 
+        } else if ((childDirected != nil && ![childDirected boolValue]) ||
                    (underAge != nil && ![underAge boolValue])) {
             requestConfig.ageRestrictedTreatment = GADAgeRestrictedTreatmentUnspecified;
         }
@@ -69,7 +128,7 @@
 
     [self.commandDelegate runInBackground:^{
         [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
-            self.isInitialized = YES; 
+            self.isInitialized = YES;
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Initialization complete."];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }];

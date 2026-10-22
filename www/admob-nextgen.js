@@ -176,6 +176,10 @@ var AdMobNextGen = {
         exec(success, error, 'AdMobNextGen', 'isAppOpenAdAvailable', []);
     },
 
+    stopAppOpenPreload: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'stopAppOpenPreload', []);
+    },
+
     startInterstitialPreload: function (options, success, error) {
         exec(success, error, 'AdMobNextGen', 'startInterstitialPreload', [options]);
     },

@@ -616,6 +616,12 @@ public class BannerPreloadExecutor {
     public void stopPreloadAndClear() {
         cordova.getActivity().runOnUiThread(() -> {
             isPreloaderActive = false;
+
+            if (currentAdUnitId != null) {
+                BannerAdPreloader.destroy(currentAdUnitId);
+                currentAdUnitId = null;
+            }
+
             destroyCurrentBanner();
 
             if (isCapacitor) {
