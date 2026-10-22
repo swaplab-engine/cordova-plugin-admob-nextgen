@@ -70,7 +70,7 @@ document.addEventListener('on.banner.load', (e) => {
 // ==========================================
 var resizeTimeout; // Variable to hold the loop
 
-document.addEventListener('on.banner.orientation.changed', (e) => {
+document.addEventListener('on.screen.orientation.changed', (e) => {
     var data = e.data || e;
     console.log("Banner Orientation/Size Changed", data);
     
