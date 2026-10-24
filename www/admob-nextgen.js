@@ -226,7 +226,55 @@ var AdMobNextGen = {
 
     stopRewardedInterstitialPreload: function (success, error) {
         exec(success, error, 'AdMobNextGen', 'stopRewardedInterstitialPreload', []);
+    },
+
+    // ==========================================================
+    // NATIVE PRELOADER METHODS
+    // ==========================================================
+
+    startNativePreload: function (options, successEvent, error) {
+        var isCapacitorEnvironment = typeof window.Capacitor !== 'undefined';
+        var isCordova15Environment = false;
+        if (!isCapacitorEnvironment && typeof cordova !== 'undefined' && cordova.platformVersion) {
+            var majorVersion = parseInt(cordova.platformVersion.split('.')[0], 10);
+            if (majorVersion >= 15) {
+                isCordova15Environment = true;
+            }
+        }
+        options = options || {};
+        options.isCapacitor = isCapacitorEnvironment;
+        options.isCordova15 = isCordova15Environment;
+        exec(successEvent, error, 'AdMobNextGen', 'startNativePreload', [options]);
+    },
+
+    showPreloadedNativeAd: function (options, success, error) {
+        var isCapacitorEnvironment = typeof window.Capacitor !== 'undefined';
+        var isCordova15Environment = false;
+        if (!isCapacitorEnvironment && typeof cordova !== 'undefined' && cordova.platformVersion) {
+            var majorVersion = parseInt(cordova.platformVersion.split('.')[0], 10);
+            if (majorVersion >= 15) {
+                isCordova15Environment = true;
+            }
+        }
+        options = options || {};
+        options.isCapacitor = isCapacitorEnvironment;
+        options.isCordova15 = isCordova15Environment;
+        exec(success, error, 'AdMobNextGen', 'showPreloadedNativeAd', [options]);
+    },
+
+    isNativeAdAvailable: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'isNativeAdAvailable', []);
+    },
+
+    hidePreloadedNativeAd: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'hidePreloadedNativeAd', []);
+    },
+
+    stopNativePreload: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'stopNativePreload', []);
     }
+
+    
 
 };
 

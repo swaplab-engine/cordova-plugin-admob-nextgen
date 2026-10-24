@@ -117,7 +117,7 @@ This plugin is regularly updated to support the latest standards.
 
 | Component | Platform | Version | Release Notes |
 | :--- | :--- | :--- | :--- |
-| **GMA Next-Gen SDK** | Android | **1.5.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
+| **GMA Next-Gen SDK** | Android | **1.6.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
 | **UMP SDK** | Android | **4.0.0** | [View Notes](https://developers.google.com/admob/android/privacy/release-notes) |
 | **Mobile Ads SDK** | iOS | **13.11.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
 | **UMP SDK** | iOS | **3.1.0** | [View Notes](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/privacy/download) |
@@ -625,6 +625,7 @@ The AdMob Next-Gen SDK introduces a powerful background Preloader Engine that ca
 | Ad Format | Start Preload | Show Polled Ad | Other Preload Methods |
 | :--- | :--- | :--- | :--- |
 | **Banner** | `startBannerPreload(obj)` | `showPreloadedBanner()` | `stopBannerPreload()`, `hideBannerPreload()` |
+| **Native** | `startNativePreload(obj)` | `showPreloadedNativeAd(obj)` | `stopNativePreload()`, `hidePreloadedNativeAd()`, `isNativeAdAvailable()` |
 | **App Open** | `startAppOpenPreload(obj)` | `showPreloadedAppOpenAd()` | `isAppOpenAdAvailable()` | `stopAppOpenPreload()` |
 | **Interstitial** | `startInterstitialPreload(obj)` | `showPreloadedInterstitial()` | `stopInterstitialPreload()`, `isInterstitialAdAvailable()` |
 | **Rewarded** | `startRewardedPreload(obj)` | `showPreloadedRewarded()` | `stopRewardedPreload()`, `isRewardedAdAvailable()` |

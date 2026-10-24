@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugin-admob-nextgen" 
-        version="2.1.5-beta" 
+        version="2.1.6-beta" 
         xmlns="http://apache.org/cordova/ns/plugins/1.0" 
         xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -51,10 +51,11 @@
         <source-file src="src/android/preloading/InterstitialPreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
         <source-file src="src/android/preloading/RewardedPreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
         <source-file src="src/android/preloading/RewardedInterstitialPreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
+        <source-file src="src/android/preloading/NativePreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
         
     </platform>
 
-    <preference name="NEXT_GEN_SDK_VERSION" default="1.5.0" />
+    <preference name="NEXT_GEN_SDK_VERSION" default="1.6.0" />
     <preference name="UMP_VERSION" default="4.0.0" />
     <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
     <preference name="APP_ID_ANDROID" default="ca-app-pub-3940256099942544~3347511713" />

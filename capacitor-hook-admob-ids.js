@@ -158,7 +158,7 @@ function run() {
             admob = {
                 APP_ID_ANDROID: appIdAndroid ? appIdAndroid[1] : "ca-app-pub-3940256099942544~3347511713",
                 APP_ID_IOS: appIdIos ? appIdIos[1] : "ca-app-pub-3940256099942544~1458002511",
-                NEXT_GEN_SDK_VERSION: sdk ? sdk[1] : "1.5.0",
+                NEXT_GEN_SDK_VERSION: sdk ? sdk[1] : "1.6.0",
                 UMP_VERSION: ump ? ump[1] : "4.0.0"
             };
         }
@@ -167,7 +167,7 @@ function run() {
         injectExclusionRules();
         if (admob?.NEXT_GEN_SDK_VERSION || admob?.UMP_VERSION) {
             updateGradleDependencies(
-                admob.NEXT_GEN_SDK_VERSION || "1.5.0",
+                admob.NEXT_GEN_SDK_VERSION || "1.6.0",
                 admob.UMP_VERSION || "4.0.0"
             );
         }

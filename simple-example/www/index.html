@@ -285,7 +285,15 @@
             <button class="btn-dark" onclick="stopBannerPreload()">Stop</button>
         </div>
 
-        <div class="sub-title" style="margin-top:10px;">Native Overlay</div>
+        <div class="mode-badge preloader">PRELOADER NATIVE</div>
+        <div class="btn-grid-4">
+            <button class="btn-alt" onclick="startNativePreload()">Start Preload</button>
+            <button class="btn-success" style="background-color:#16a34a" onclick="showNativePreload()">Show Polled</button>
+            <button class="btn-hide" onclick="hideNativePreload()">Hide</button>
+            <button class="btn-dark" onclick="stopNativePreloader()">Stop</button>
+        </div>
+
+        <div class="sub-title" style="margin-top:10px;">Native Banner</div>
         <div class="mode-badge classic">CLASSIC (ANDROID)</div>
         <div class="btn-grid-2">
             <button class="btn-load" onclick="createNativeAds()">Load & Show</button>
@@ -373,6 +381,7 @@
 <script src="js/preloading/bannerAdPreload.js"></script>
 <script src="js/preloading/interstitialAdPreload.js"></script>
 <script src="js/preloading/rewardedAdPreload.js"></script>
+<script src="js/preloading/nativeAdPreload.js"></script>
 
 <script>
     window.logToScreen = function(message, type = 'info') {
