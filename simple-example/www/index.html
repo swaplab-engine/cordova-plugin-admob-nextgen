@@ -258,6 +258,37 @@
     <div class="card">
         <div class="card-header">Overlay Ads</div>
 
+        <!-- =====================================
+         PICTURE-IN-PICTURE (BETA)
+         ===================================== -->
+    <div class="card" style="border: 1px solid #f59e0b;">
+        <div class="card-header" style="color: #f59e0b;">Picture-in-Picture (PiP)</div>
+        <div class="options-row">
+            <select id="pip-pos">
+                <option value="DEFAULT">DEFAULT</option>
+                <option value="TOP_LEFT">TOP LEFT</option>
+                <option value="TOP_RIGHT">TOP RIGHT</option>
+                <option value="BOTTOM_LEFT">BOTTOM LEFT</option>
+                <option value="BOTTOM_RIGHT">BOTTOM RIGHT</option>
+            </select>
+            <label style="margin-left:5px;">Scope: 
+                <select id="pip-scope">
+                    <option value="SCREEN">SCREEN</option>
+                    <option value="APPLICATION">APPLICATION</option>
+                </select>
+            </label>
+        </div>
+        <div class="options-row">
+            <label><input type="checkbox" id="pip-autoshow"> AutoShow</label>
+        </div>
+        <div class="btn-grid-4">
+            <button class="btn-load" onclick="loadPipAd()">Load</button>
+            <button class="btn-show" onclick="showPipAd()">Show</button>
+            <button class="btn-hide" onclick="hidePipAd()">Hide</button>
+            <button class="btn-remove" onclick="removePipAd()">Destroy</button>
+        </div>
+    </div>
+
         <div class="options-row">
             <select id="banner-preload-pos">
                 <option value="bottom">Bottom</option>
@@ -372,6 +403,7 @@
 
 <script src="js/appOpenAd.js"></script>
 <script src="js/bannerAd.js"></script>
+<script src="js/pipAd.js"></script>
 <script src="js/nativeAd.js"></script>
 <script src="js/interstitialAd.js"></script>
 <script src="js/rewardedAd.js"></script>

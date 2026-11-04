@@ -1,5 +1,6 @@
 var App_Open_ID;
 var Banner_ID;
+var PiP_ID;
 var NativeAd_ID;
 var Interstitial_ID;
 var Rewarded_ID;
@@ -26,6 +27,7 @@ if it happens often, it is possible that your admob account will be permanently 
 if (window.cordova && window.cordova.platformId === 'ios') {
     App_Open_ID = 'ca-app-pub-3940256099942544/5575463023';
     Banner_ID = 'ca-app-pub-3940256099942544/2435281174';
+    PiP_ID = 'ca-app-pub-3940256099942544/8810945611';
     NativeAd_ID = 'ca-app-pub-3940256099942544/3986624511';
     Interstitial_ID = 'ca-app-pub-3940256099942544/4411468910';
     Rewarded_ID = 'ca-app-pub-3940256099942544/1712485313';
@@ -36,6 +38,7 @@ if (window.cordova && window.cordova.platformId === 'ios') {
     // Assume Android
     App_Open_ID = 'ca-app-pub-3940256099942544/9257395921';
     Banner_ID = 'ca-app-pub-3940256099942544/9214589741';
+    PiP_ID = 'ca-app-pub-3940256099942544/9657123429';
     NativeAd_ID = 'ca-app-pub-3940256099942544/2247696110';
     Interstitial_ID = 'ca-app-pub-3940256099942544/1033173712';
     Rewarded_ID = 'ca-app-pub-3940256099942544/5224354917';

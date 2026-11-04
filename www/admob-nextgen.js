@@ -84,6 +84,23 @@ var AdMobNextGen = {
         exec(success, error, 'AdMobNextGen', 'removeBanner', []);
     },
 
+    createPictureInPicture: function (options, success, error) {
+        options = options || {};
+        exec(success, error, 'AdMobNextGen', 'createPictureInPicture', [options]);
+    },
+
+    showPictureInPicture: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'showPictureInPicture', []);
+    },
+
+    hidePictureInPicture: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'hidePictureInPicture', []);
+    },
+
+    removePictureInPicture: function (success, error) {
+        exec(success, error, 'AdMobNextGen', 'removePictureInPicture', []);
+    },
+
     createInterstitial: function (options, successEvent, error) {
         exec(successEvent, error, 'AdMobNextGen', 'createInterstitial', [options]);
     },

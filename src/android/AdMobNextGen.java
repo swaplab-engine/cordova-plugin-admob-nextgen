@@ -2,6 +2,7 @@ package com.emi.cordova.admob.nextgen;
 
 import com.emi.cordova.admob.nextgen.preloading.AppOpenAdPreloadExecutor;
 import com.emi.cordova.admob.nextgen.preloading.BannerPreloadExecutor;
+import com.emi.cordova.admob.nextgen.PictureInPictureExecutor;
 import com.emi.cordova.admob.nextgen.preloading.InterstitialPreloadExecutor;
 import com.emi.cordova.admob.nextgen.preloading.NativePreloadExecutor;
 import com.emi.cordova.admob.nextgen.preloading.RewardedPreloadExecutor;
@@ -37,6 +38,7 @@ public class AdMobNextGen extends CordovaPlugin {
 
     private static final String TAG = "AdMobNextGen";
     private BannerExecutor bannerExecutor;
+    private PictureInPictureExecutor pictureInPictureExecutor;
     private AppOpenAdExecutor appOpenAdExecutor;
     private InterstitialExecutor interstitialExecutor;
     private RewardedExecutor rewardedExecutor;
@@ -68,6 +70,7 @@ public class AdMobNextGen extends CordovaPlugin {
         appOpenAdExecutor.initialize(cordova, webView);
 
         bannerExecutor = new BannerExecutor(cordova, webView);
+        pictureInPictureExecutor = new PictureInPictureExecutor(cordova, webView);
         interstitialExecutor = new InterstitialExecutor(cordova, webView);
         rewardedExecutor = new RewardedExecutor(cordova, webView);
         rewardedInterstitialExecutor = new RewardedInterstitialExecutor(cordova, webView);
@@ -140,6 +143,27 @@ public class AdMobNextGen extends CordovaPlugin {
 
         if ("removeBanner".equals(action)) {
             bannerExecutor.destroy();
+            callbackContext.success();
+            return true;
+        }
+
+        if ("createPictureInPicture".equals(action)) {
+            pictureInPictureExecutor.createPictureInPicture(args, callbackContext);
+            return true;
+        }
+
+        if ("showPictureInPicture".equals(action)) {
+            pictureInPictureExecutor.showPictureInPicture(callbackContext);
+            return true;
+        }
+
+        if ("hidePictureInPicture".equals(action)) {
+            pictureInPictureExecutor.hidePictureInPicture(callbackContext);
+            return true;
+        }
+
+        if ("removePictureInPicture".equals(action)) {
+            pictureInPictureExecutor.destroy();
             callbackContext.success();
             return true;
         }
@@ -401,6 +425,9 @@ public class AdMobNextGen extends CordovaPlugin {
     public void onDestroy() {
         if (bannerExecutor != null){
             bannerExecutor.destroy();
+        }
+        if (pictureInPictureExecutor != null) {
+             pictureInPictureExecutor.destroy();
         }
         if (nativeExecutor != null) {
             nativeExecutor.destroy();

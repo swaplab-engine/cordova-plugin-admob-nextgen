@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugin-admob-nextgen" 
-        version="2.1.6-beta" 
+        version="2.1.7-beta" 
         xmlns="http://apache.org/cordova/ns/plugins/1.0" 
         xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -52,6 +52,8 @@
         <source-file src="src/android/preloading/RewardedPreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
         <source-file src="src/android/preloading/RewardedInterstitialPreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
         <source-file src="src/android/preloading/NativePreloadExecutor.java" target-dir="src/com/emi/cordova/admob/nextgen/preloading" />
+
+        <source-file src="src/android/PictureInPictureExecutor.java" target-dir="app/src/main/java/com/emi/cordova/admob/nextgen" />
         
     </platform>
 

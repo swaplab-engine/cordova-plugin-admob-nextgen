@@ -431,6 +431,51 @@ document.addEventListener('on.screen.orientation.changed', (e) => {
 
 ---
 
+## 3.1 Picture-in-Picture Ads (Beta)
+
+Supports a floating ad window that stays on top of content and can be dragged across the screen by the user.
+
+> **⚠️ Implementation Guide (Policy):**
+> PiP ads must comply with strict placement rules to prevent accidental clicks. They should not overlap with full-screen ads or other banners. Read the official guidelines before implementing:
+> 👉 [Implementation guide (Policy)](https://support.google.com/admob/answer/17155813)
+
+### Create Picture-in-Picture
+
+    admobNextGen.createPictureInPicture({
+        adUnitId: 'ca-app-pub-xxx/xxx',
+        position: 'BOTTOM_RIGHT', // 'TOP_LEFT', 'TOP_RIGHT', 'BOTTOM_LEFT', 'BOTTOM_RIGHT', 'DEFAULT'
+        presentationScope: 'SCREEN', // 'SCREEN' (bound to current view) or 'APPLICATION' (stays visible across screens)
+        retryInterval: 5000,      // Anti-spam delay (ms)
+        isAutoShow: true
+    });
+
+### Picture-in-Picture Methods
+
+    admobNextGen.showPictureInPicture();
+    admobNextGen.hidePictureInPicture();
+    admobNextGen.removePictureInPicture();
+
+### Picture-in-Picture Events
+
+    document.addEventListener('on.pip.loaded', () => console.log("PiP Loaded"));
+    document.addEventListener('on.pip.failed.load', (err) => console.error(err));
+    document.addEventListener('on.pip.revenue', (data) => {
+        console.log("Revenue: " + data.value + " " + data.currency);
+    });
+    
+    // Lifecycle Events
+    on.pip.shown          // When the floating window appears on screen
+    on.pip.hidden         // When the floating window is hidden
+    on.pip.opened         // When the full-screen content is opened (user clicked)
+    on.pip.closed         // When the full-screen content is closed
+    on.pip.failed.show    // When the ad fails to display
+    on.pip.impression
+    on.pip.clicked
+
+- [⚡ Example implementation ](https://github.com/swaplab-engine/cordova-plugin-admob-nextgen/tree/main/simple-example/www/js/pipAd.js)
+
+---
+
 ## 4. Native Ads (Advanced Overlay) - Android Only
 
 - Recommended: **[⚡ cordova-plugin-admob-nextgen-native ](https://github.com/swaplab-engine/cordova-plugin-admob-nextgen-native)** (Android | IOS)
