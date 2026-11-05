@@ -21,6 +21,11 @@
 - (void)hideBanner:(CDVInvokedUrlCommand*)command;
 - (void)removeBanner:(CDVInvokedUrlCommand*)command;
 
+- (void)createPictureInPicture:(CDVInvokedUrlCommand*)command;
+- (void)showPictureInPicture:(CDVInvokedUrlCommand*)command;
+- (void)hidePictureInPicture:(CDVInvokedUrlCommand*)command;
+- (void)removePictureInPicture:(CDVInvokedUrlCommand*)command;
+
 - (void)createInterstitial:(CDVInvokedUrlCommand*)command;
 - (void)showInterstitial:(CDVInvokedUrlCommand*)command;
 

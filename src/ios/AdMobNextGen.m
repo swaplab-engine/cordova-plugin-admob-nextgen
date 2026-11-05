@@ -2,6 +2,7 @@
 #import "ConsentExecutor.h"
 #import "GlobalSettingsExecutor.h"
 #import "BannerExecutor.h"
+#import "PictureInPictureExecutor.h"
 #import "InterstitialExecutor.h"
 #import "RewardedExecutor.h"
 #import "AppOpenAdExecutor.h"
@@ -25,6 +26,7 @@
 @property (nonatomic, strong) ConsentExecutor *consentExecutor;
 @property (nonatomic, strong) GlobalSettingsExecutor *globalSettingsExecutor;
 @property (nonatomic, strong) BannerExecutor *bannerExecutor;
+@property (nonatomic, strong) PictureInPictureExecutor *pictureInPictureExecutor;
 @property (nonatomic, strong) InterstitialExecutor *interstitialExecutor;
 @property (nonatomic, strong) RewardedExecutor *rewardedExecutor;
 @property (nonatomic, strong) RewardedInterstitialExecutor *rewardedInterstitialExecutor;
@@ -40,6 +42,7 @@
     self.consentExecutor = [[ConsentExecutor alloc] initWithPlugin:self];
     self.globalSettingsExecutor = [[GlobalSettingsExecutor alloc] initWithPlugin:self];
     self.bannerExecutor = [[BannerExecutor alloc] initWithPlugin:self];
+    self.pictureInPictureExecutor = [[PictureInPictureExecutor alloc] initWithPlugin:self];
     self.interstitialExecutor = [[InterstitialExecutor alloc] initWithPlugin:self];
     self.rewardedExecutor = [[RewardedExecutor alloc] initWithPlugin:self];
     [[AppOpenAdExecutor sharedInstance] initializeWithPlugin:self];
@@ -206,6 +209,40 @@
 
 - (void)removeBanner:(CDVInvokedUrlCommand*)command {
     [self.bannerExecutor removeBanner:command];
+}
+
+#pragma mark - Picture in Picture Routing
+
+- (void)createPictureInPicture:(CDVInvokedUrlCommand*)command {
+    if (!self.isInitialized) {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"SDK not initialized. Call initialize() first."];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+
+    NSDictionary *options = nil;
+    if (command.arguments.count > 0 && [command.arguments objectAtIndex:0] != [NSNull null]) {
+        options = [command.arguments objectAtIndex:0];
+    }
+
+    if (options != nil && [options isKindOfClass:[NSDictionary class]]) {
+        [self.pictureInPictureExecutor createPictureInPicture:options command:command];
+    } else {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid options object."];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+}
+
+- (void)showPictureInPicture:(CDVInvokedUrlCommand*)command {
+    [self.pictureInPictureExecutor showPictureInPicture:command];
+}
+
+- (void)hidePictureInPicture:(CDVInvokedUrlCommand*)command {
+    [self.pictureInPictureExecutor hidePictureInPicture:command];
+}
+
+- (void)removePictureInPicture:(CDVInvokedUrlCommand*)command {
+    [self.pictureInPictureExecutor removePictureInPicture:command];
 }
 
 #pragma mark - Interstitial Routing

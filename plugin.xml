@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugin-admob-nextgen" 
-        version="2.1.7-beta" 
+        version="2.1.8-beta" 
         xmlns="http://apache.org/cordova/ns/plugins/1.0" 
         xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -157,6 +157,8 @@
         <source-file src="src/ios/AppOpenAdExecutor.m" />
         <header-file src="src/ios/BannerExecutor.h" />
         <source-file src="src/ios/BannerExecutor.m" />
+        <header-file src="src/ios/PictureInPictureExecutor.h" />
+        <source-file src="src/ios/PictureInPictureExecutor.m" />
         <header-file src="src/ios/InterstitialExecutor.h" />
         <source-file src="src/ios/InterstitialExecutor.m" />
         <header-file src="src/ios/RewardedExecutor.h" />
